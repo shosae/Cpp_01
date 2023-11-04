@@ -1,1 +1,129 @@
+프렌드 함수에 대해 배웠다. 프렌드 선언은 클래스의 멤버로 선언하기에는 무리가 있고, 클래스의 모든 멤버를 자유롭게 접근할 수 있는 외부 함수로 작성할 때 필요하다.
+
+프렌드 함수가 되는 3가지 경우가 존재한다. 전역함수, 다른 클래스의 멤버 함수, 다른 클래스의 모든 멤버 함수일 때이다. c++에서는 
+연산자 중복이 가능하다. 
+
+그 예로는 정수 더하기,문자열 합치기, 색 섞기, 배열 합치기 등이 있다. 이때 연산자 중복은 반드시 클래스와 관계를가지고 
+모든 연산자가 중복 가능하지 않다. 
+//+, ==, += 실습
+#include <iostream>
+using namespace std;
+class Power {
+	int kick;
+	int punch;
+public:
+	Power(int kick = 0, int punch = 0) {
+		this->kick = kick; this->punch = punch;
+	}
+	void show();
+	Power operator+(Power op2); // + 연산자 함수 선언
+	bool operator== (Power op2); // == 연산자 함수 선언
+	Power& operator+= (Power op2); // += 연산자 함수 선언 값을 바꿔야하기 때문에 참조 &
+	Power operator+ (int op2);
+
+};
+void Power::show() {
+	cout << "kick=" << kick << ',' << "punch=" << punch
+		<< endl;
+}
+Power Power::operator+(Power op2) {
+	Power tmp; // 임시 객체 생성
+	tmp.kick = this->kick + op2.kick; // kick 더하기
+	tmp.punch = this->punch + op2.punch; // punch 더하기
+	return tmp; // 더한 결과 
+}
+
+bool Power::operator==(Power op2) {
+	if (kick == op2.kick && punch == op2.punch) return true;
+	else return false;
+}
+
+
+Power& Power::operator+=(Power op2) {
+	kick = kick + op2.kick; // kick 더하기
+	punch = punch + op2.punch; // punch 더하기
+	return *this; // 합한 결과 리턴
+}
+
+int main() {
+	Power a(1, 2), b(3, 4), c;
+	
+	cout << "a(1,2)  b(3,4)\n" << endl;
+
+	cout << "+ 연산자" << endl;
+	cout << "연산 전 a: ";
+	a.show();
+	cout << "        b: ";
+	b.show();
+	c = a + b;
+	cout << "연산 후 a: ";
+	a.show();
+	cout << "        c: ";
+	c.show();
+	cout << endl;
+
+	cout << "비교 연산자 ==" << endl;
+	cout << "a: ";
+	a.show();
+	cout << "b: ";
+	b.show();
+	if (a == b) cout << "두 파워가 같다." << endl;
+	else cout << "두 파워가 같지 않다.\n" << endl;
+
+	cout << "+= 연산자" << endl;
+	cout << "연산 전 a: ";
+	a.show();
+	c = a += b; 
+	cout << "        b: ";
+	b.show();
+	cout << "연산 후 a: ";
+	a.show();
+	cout << "        c: ";
+	c.show();
+}
+
+*********실행 결과***********************
+
+a(1,2)  b(3,4)
+
++ 연산자
+연산 전 a: kick=1,punch=2
+        b: kick=3,punch=4
+연산 후 a: kick=1,punch=2
+        c: kick=4,punch=6
+
+비교 연산자 ==
+a: kick=1,punch=2
+b: kick=3,punch=4
+두 파워가 같지 않다.
+
++= 연산자
+연산 전 a: kick=1,punch=2
+        b: kick=3,punch=4
+연산 후 a: kick=4,punch=6
+        c: kick=4,punch=6
+****************************************
+
+이처럼 객체끼리 더할수도 있지만, 객체와 정수나 소수와 같은 숫자도 더할 수 있는데, 이때는 더하는 순서를 조심해야한다.(매개변수 순서)
+
+
+
+
+c++에서는 단항 연산자 중복도 가능하다. 단항 연산자 종류에는 전위 연산자와 후위 연산자가 있다.
+
+전위 연산자는 예를 들어 Power& operator++ ( );
+후위 연산자는 예를 들어 Power  operator ++ (int)처럼 사용하고, 
+
+여기서 매개변수 int는 특별한 의미를 가지는 것이 아니라 전위/후위 연산자의 구분을 위한 것이다.
+
+전위 연산자는 증감된 값을 참조형으로 반환하지만(Power&) 후위 연산자는 값은 증가시키지만 증감 전의 값을 임시 객체로 만들어서 반환한다.
+
+
+
+
+
+
+
+
+
 
