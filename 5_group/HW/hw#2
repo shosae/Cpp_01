@@ -1,0 +1,299 @@
+//UI.h
+#ifndef UI_H
+#define UI_H
+
+class UI {
+public:
+    static int main_menu();
+    static int insert_menu();
+    static int remove_menu();
+};
+#endif // UI_H
+
+
+//Shape.h
+#ifndef SHAPE_H
+#define SHAPE_H
+
+class Shape {
+    Shape *next;
+protected:
+    virtual void draw() = 0;
+public:
+    Shape();
+    ~Shape();
+    void paint();
+    Shape *add(Shape *p);
+    Shape *getNext();
+    void setNext(Shape *p);
+};
+#endif // SHAPE_H
+
+
+//Line.h
+#ifndef LINE_H
+#define LINE_H
+
+#include "Shape.h"
+
+class Line : public Shape {
+protected:
+    virtual void draw();
+};
+#endif // LINE_H
+
+
+//Circle.h
+#ifndef CIRCLE_H
+#define CIRCLE_H
+#include "Shape.h"
+
+class Circle : public Shape {
+protected:
+    void draw();
+};
+#endif // CIRCLE_H
+
+
+//Rect.h
+#ifndef RECT_H
+#define RECT_H
+#include "Shape.h"
+
+class Rect : public Shape {
+protected:
+    virtual void draw();
+};
+#endif // RECT_H
+
+
+//GraphicEditor.h
+#ifndef GRAPHICEDITOR_H
+#define GRAPHICEDITOR_H
+#include "Shape.h"
+
+class GraphicEditor {
+    Shape *pStart;
+    Shape *pLast;
+    int count;
+public:
+    GraphicEditor();
+    void insert(int num);
+    void remove(int num);
+    void call();
+};
+#endif // GRAPHICEDITOR_H
+
+
+//UI.cpp
+#include "UI.h"
+#include <iostream>
+using namespace std;
+
+int UI::main_menu() {
+    int n;
+    cout << "삽입:1, 삭제:2, 모두보기:3, 종료:4 >> ";
+    cin >> n;
+    return n;
+}
+
+int UI::insert_menu() {
+    int n;
+    cout << "선:1, 원:2, 사각형:3 >> ";
+    cin >> n;
+    return n;
+}
+
+int UI::remove_menu() {
+    int n;
+    cout << "삭제하고자 하는 도형의 인덱스 >> ";
+    cin >> n;
+    return n;
+}
+
+
+//Shape.cpp
+#include <iostream>
+#include "Shape.h"
+
+Shape::Shape() {
+    next = NULL;
+}
+
+Shape::~Shape() {
+}
+
+void Shape::paint() {
+    draw();
+}
+
+Shape *Shape::add(Shape *p) {
+    this->next = p;
+    return p;
+}
+
+Shape *Shape::getNext() {
+    return next;
+}
+
+void Shape::setNext(Shape *p) {
+    this->next = p->next;
+}
+
+
+//Line.cpp
+#include <iostream>
+#include "Line.h"
+using namespace std;
+
+void Line::draw() {
+    cout << "Line" << endl;
+}
+
+
+//Circle.cpp
+#include <iostream>
+#include "Circle.h"
+using namespace std;
+
+void Circle::draw() {
+    cout << "Circle" << endl;
+}
+
+
+//Rect.cpp
+#include <iostream>
+#include "Rect.h"
+using namespace std;
+
+void Rect::draw() {
+    cout << "Rectangle" << endl;
+}
+
+
+//GraphicEditor.cpp
+#include <iostream>
+#include "GraphicEditor.h"
+#include "UI.h"
+#include "Line.h"
+#include "Circle.h"
+#include "Rect.h"
+using namespace std;
+
+GraphicEditor::GraphicEditor() {
+    pStart = NULL; 
+    pLast = NULL;
+    count = 0;
+}
+
+void GraphicEditor::insert(int num) {
+    switch (num) {
+    case 1: 
+        if (count == 0) {
+            pStart = new Line();
+            pLast = pStart; 
+        }
+        else
+            pLast = pLast->add(new Line()); 
+        
+        count++;
+        break;
+
+    case 2: 
+        if (count == 0) {
+            pStart = new Circle();
+            pLast = pStart;
+        }
+        else
+            pLast = pLast->add(new Circle());
+        
+        count++;
+        break;
+
+    case 3: 
+        if (count == 0) {
+            pStart = new Rect();
+            pLast = pStart;
+        }
+        else
+            pLast = pLast->add(new Rect());
+        
+        count++;
+        break;
+    }
+}
+
+void GraphicEditor::remove(int num) {
+    Shape *p = pStart;
+    Shape *del = pStart;
+        if (num < count) {
+            for (int i = 0; i < num; i++) {
+                p = del;
+                del = del->getNext();
+            }
+
+            if (num == 0)
+                pStart = p->getNext();
+            else
+                p->setNext(del);
+            count--;
+
+            if (count == 1) 
+                pLast = pStart;
+
+            delete del;
+        }
+        else
+            cout << "인덱스를 잘못 입력하셨습니다." << endl;
+  }
+
+void GraphicEditor::call() {
+    bool exit = true;
+    cout << "그래픽 에디터입니다." << endl;
+    while (exit) {
+        switch (UI::main_menu()) {
+        case 1:
+            insert(UI::insert_menu()); 
+            break;
+
+        case 2:
+            if (pStart != NULL) {
+                remove(UI::remove_menu());
+            }
+            else
+                cout << "삭제할 도형이 없습니다." << endl;
+            break;
+
+        case 3: {
+            if (pStart != NULL) {
+                Shape* p = pStart;
+                for (int i = 0; i < count; i++) {
+                    cout << i << ": "; p->paint();
+                    p = p->getNext();
+                }
+            }
+            else
+                cout << "도형을 먼저 삽입하세요" << endl;
+            break;
+        }
+
+        case 4: 
+            exit = false;
+            break;
+       
+        default:
+            cout << "메뉴를 잘못 입력하셨습니다." << endl;
+        }
+    }
+}
+
+
+//main.cpp
+#include "GraphicEditor.h"
+
+int main() {
+    GraphicEditor* editor = new GraphicEditor;
+    editor->call();
+    delete editor;
+    return 0;
+}
