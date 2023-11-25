@@ -1,0 +1,222 @@
+//UI.h
+#ifndef UI_H
+#define UI_H
+
+class UI {
+public:
+    static int main_menu();
+    static int insert_menu();
+    static int remove_menu();
+};
+#endif // UI_H
+
+//Shape.h
+#ifndef SHAPE_H
+#define SHAPE_H
+class Shape{
+protected:
+    virtual void draw() = 0;
+public:
+    void paint();
+};
+
+#endif // SHAPE_H
+
+//Line.h
+#ifndef LINE_H
+#define LINE_H
+#include "Shape.h"
+
+class Line : public Shape {
+protected:
+    virtual void draw();
+};
+#endif // LINE_H
+
+
+//Circle.h
+#ifndef CIRCLE_H
+#define CIRCLE_H
+#include "Shape.h"
+
+class Circle : public Shape {
+protected:
+	virtual void draw();
+};
+#endif // CIRCLE_H
+
+//Rect.h
+#ifndef RECT_H
+#define RECT_H
+#include "Shape.h"
+
+class Rect : public Shape {
+protected:
+    virtual void draw();
+};
+#endif // RECT_H
+
+//GraphicEditor.h
+#ifndef GRAPHICEDITOR_H
+#define GRAPHICEDITOR_H
+#include <vector>
+#include "Shape.h"
+using namespace std;
+
+class GraphicEditor {
+	vector<Shape*> v;
+	vector<Shape*>::iterator it;
+public:
+	GraphicEditor();
+	void insert(int num);
+	void remove(int num);
+	void call();
+};
+#endif // GRAPHICEDITOR_H
+
+//UI.cpp
+#include "UI.h"
+#include <iostream>
+using namespace std;
+
+int UI::main_menu() {
+    int n;
+    cout << "삽입:1, 삭제:2, 모두보기:3, 종료:4 >> ";
+    cin >> n;
+    return n;
+}
+
+int UI::insert_menu() {
+    int n;
+    cout << "선:1, 원:2, 사각형:3 >> ";
+    cin >> n;
+    return n;
+}
+
+int UI::remove_menu() {
+    int n;
+    cout << "삭제하고자 하는 도형의 인덱스 >> ";
+    cin >> n;
+    return n;
+}
+
+
+//Shape.cpp
+#include <iostream>
+#include "Shape.h"
+
+void Shape::paint() {
+    draw();
+}
+
+//Line.cpp
+#include <iostream>
+#include "Line.h"
+using namespace std;
+
+void Line::draw() {
+    cout << "Line" << endl;
+}
+
+//Circle.cpp
+#include <iostream>
+#include "Circle.h"
+using namespace std;
+
+void Circle::draw() {
+    cout << "Circle" << endl;
+}
+
+//Rect.cpp
+#include <iostream>
+#include "Rect.h"
+using namespace std;
+
+void Rect::draw() {
+    cout << "Rectangle" << endl;
+}
+
+//GraphicEditor.cpp
+#include <iostream>
+#include "GraphicEditor.h"
+#include "UI.h"
+#include "Line.h"
+#include "Circle.h"
+#include "Rect.h"
+using namespace std;
+
+GraphicEditor::GraphicEditor() {}
+
+void GraphicEditor::insert(int num) {
+	switch (num) {
+	case 1:
+		v.push_back(new Line());
+		break;
+
+	case 2:
+		v.push_back(new Circle());
+		break;
+
+	case 3:
+		v.push_back(new Rect());
+		break;
+	}
+}
+
+void GraphicEditor::remove(int num) {
+	Shape* del;
+	if (num >= 0 && num < v.size()) {
+		it = v.begin() + num;
+		del = *it;
+		it = v.erase(it);
+		delete del;
+	}
+	else {
+		cout << "인덱스를 잘못 입력하셨습니다." << endl;
+	}
+}
+
+
+void GraphicEditor::call() {
+	bool exit = true;
+	cout << "그래픽 에디터입니다." << endl;
+	while (exit) {
+		switch (UI::main_menu()) {
+		case 1:
+			insert(UI::insert_menu()); // 입력 
+			break;
+
+		case 2:
+			if (v.empty())
+				cout << "삭제할 도형이 없습니다" << endl;
+			else
+				remove(UI::remove_menu());// 삭제
+			break;
+		case 3:
+			if (v.empty())
+				cout << "표시할 도형이 없습니다." << endl;
+			else {
+				for (int i = 0; i < v.size(); i++) {
+					cout << i << ": ";
+					v[i]->paint();
+				}
+			}
+			break;
+		case 4:
+			exit = false;
+			break;
+		default:
+			cout << "메뉴를 잘못 입력하셨습니다." << endl;
+		}
+	}
+}
+
+//main.cpp
+#include "GraphicEditor.h"
+
+int main() {
+    GraphicEditor* editor = new GraphicEditor;
+    editor->call();
+    delete editor;
+    return 0;
+}
