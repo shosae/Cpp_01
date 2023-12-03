@@ -225,7 +225,7 @@ void Machine::call() {
 #include <iostream>
 using namespace std;
 int main() {
-	cout << "------명품자판기 등장------" << endl;
+	cout << "------명품 커피 자판기켭니다.------" << endl;
 	Machine* machine = new Machine;
 	machine->call();
 	delete machine;
