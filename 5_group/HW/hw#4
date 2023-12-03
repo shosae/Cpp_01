@@ -1,0 +1,233 @@
+//UI.h
+#ifndef UI_H
+#define UI_H
+class UI {
+public:
+	static int MainMenu();
+};
+#endif
+
+//Ingredient.h
+#ifndef INGREDIENT_H
+#define INGREDIENT_H
+class Ingredient {
+public:
+	int Coffee;
+	int Sugar;
+	int Cream;
+	int Water;
+	int Cup;
+	Ingredient(int Coffee = 3, int Sugar = 3, int Cream = 3, int Water = 3, int Cup = 3) {
+		this->Coffee = Coffee;
+		this->Sugar = Sugar;
+		this->Cream = Cream;
+		this->Water = Water;
+		this->Cup = Cup;
+	}
+	void Basic();
+	void refill();
+	void ingLeft();
+	void Count(int count);
+};
+#endif 
+
+//NormalCoffee.h
+#ifndef NormalCoffee_H
+#define NormalCoffee_H
+#include "Ingredient.h"
+class NormalCoffee : public Ingredient {
+public:
+    NormalCoffee(Ingredient& ingredient);
+};
+#endif 
+
+//SugarCoffee.h
+#ifndef SugarCoffee_H
+#define SugarCoffee_H
+#include "Ingredient.h"
+class SugarCoffee : public Ingredient {
+public:
+	SugarCoffee(Ingredient& ingredient);
+};
+#endif 
+
+//BlackCoffee.h
+#ifndef BlackCoffee_H
+#define BlackCoffee_H
+#include "Ingredient.h"
+class BlackCoffee : public Ingredient {
+public:
+    BlackCoffee(Ingredient& ingredient);
+};
+#endif 
+
+//Machine.h
+#ifndef MACHINE_H
+#define MACHINE_H
+#include "Ingredient.h"
+class Machine{
+	Ingredient Ing;
+public:
+	void call();
+};
+#endif 
+
+//UI.cpp
+#include "UI.h"
+#include <iostream>
+using namespace std;
+
+int UI::MainMenu() {
+	int n;
+	cout << "보통커피:0, 설탕커피:1, 블랙 커피:2, 채우기:3, 종료:4>> ";
+	cin >> n;
+	return n;
+}
+
+//Ingredient.cpp
+#include "Ingredient.h"
+#include <iostream>
+using namespace std;
+
+void Ingredient::Basic(){
+	this->Coffee--;
+	this->Water--;
+	this->Cup--;
+}
+void Ingredient::refill() {
+	this->Coffee = 3;
+	this->Sugar = 3;
+	this->Cream = 3;
+	this->Water = 3;
+	this->Cup = 3;
+}
+void Ingredient::Count(int count) {
+	cout << "\t";
+	for (int i = 0; i < count; i++) {
+		cout << '*';
+	}
+}
+
+void Ingredient::ingLeft() {
+	cout << "Coffee";
+	Count(Coffee);
+	cout << endl;
+	cout << "Sugar";
+	Count(Sugar);
+	cout << endl;
+	cout << "Cream";
+	Count(Cream);
+	cout << endl;
+	cout << "Water";
+	Count(Water);
+	cout << endl;
+	cout << "Cup";
+	Count(Cup); 
+	cout << endl;
+}
+
+//NormalCoffee.cpp
+#include "NormalCoffee.h"
+
+NormalCoffee::NormalCoffee(Ingredient& ingredient) {
+	ingredient.Basic();
+	ingredient.Cream--;
+}
+
+//SugarCoffee.cpp
+#include "SugarCoffee.h"
+
+SugarCoffee::SugarCoffee(Ingredient& ingredient){
+	ingredient.Basic();
+	ingredient.Sugar--;
+}
+
+//BlackCoffee.cpp
+#include "BlackCoffee.h"
+
+BlackCoffee::BlackCoffee(Ingredient& ingredient) {
+	ingredient.Basic();
+}
+
+//Machine.cpp
+#include<iostream>
+#include "machine.h"
+#include "UI.h"
+#include "Ingredient.h"
+#include "NormalCoffee.h"
+#include "SugarCoffee.h"
+#include "BlackCoffee.h"
+using namespace std;
+
+void Machine::call() {
+	Ing.ingLeft();
+	bool exit = true;
+	while (exit) {
+		switch (UI::MainMenu()) {
+		case 0:
+		{
+			if (Ing.Coffee != 0) { //구조상 커피, 물, 컵이 제일 먼저 줄어들기 때문
+				cout << "맛있는 보통커피 나왔습니다~~" << endl;
+				NormalCoffee normalCoffee(Ing);
+				normalCoffee.Basic();
+				Ing.ingLeft();
+			}
+			else
+				cout << "재료가 부족합니다!" << endl;
+			break;
+		}
+		case 1: {
+			if (Ing.Coffee != 0) {
+				cout << "맛있는 설탕커피 나왔습니다~~" << endl;
+				SugarCoffee sugarCoffee(Ing);
+				sugarCoffee.Basic();
+				Ing.ingLeft();
+			}
+			else
+				cout << "재료가 부족합니다!" << endl;
+			break;
+				
+		}
+		case 2: {
+			if (Ing.Coffee != 0) {
+				cout << "맛있는 블랙커피 나왔습니다~~" << endl;
+				BlackCoffee blackCoffee(Ing);
+				blackCoffee.Basic();
+				Ing.ingLeft();
+			}
+			else
+				cout << "재료가 부족합니다!" << endl;
+			break;
+		}
+		case 3: {
+			if (Ing.Coffee != 3) {
+				cout << "모든 통을 채웁니다.~~" << endl;
+				Ing.refill();
+				Ing.ingLeft();
+			}
+			else
+				cout << "이미 모든 재료가 찼습니다!" << endl;
+			break;
+		}
+		case 4: {
+			exit = false;
+			break;
+		}
+		default: {
+			cout << "메뉴를 잘못 입력하셨습니다" << endl;
+		}
+		}
+	}
+}
+
+//main.cpp
+#include "Machine.h"
+#include <iostream>
+using namespace std;
+int main() {
+	cout << "------명품자판기 등장------" << endl;
+	Machine* machine = new Machine;
+	machine->call();
+	delete machine;
+	return 0;
+}
